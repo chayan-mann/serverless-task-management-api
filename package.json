@@ -6,14 +6,10 @@
     "dev": "serverless offline",
     "build": "tsc"
   },
-  "dependencies": {
-    "express": "^4.19.2",
-    "serverless-http": "^3.2.0"
-  },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.145",
-    "@types/express": "^4.17.21",
-    "@types/node": "^20.14.10",
+    "@types/node": "^20.19.43",
+    "crypto": "^1.0.1",
     "serverless": "^3.39.0",
     "serverless-offline": "^13.6.0",
     "serverless-plugin-typescript": "^2.1.5",

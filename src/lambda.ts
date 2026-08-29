@@ -1,21 +1,45 @@
-import serverlessHttp from 'serverless-http';
-import app from './app';
+import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
+import { randomUUID } from 'crypto';
 
-// This file is the whole lesson: how does an HTTP request become
-// a Lambda event, and how does a Lambda response become HTTP again?
-//
-// 1. A client sends "POST /tasks" with a JSON body.
-// 2. API Gateway does NOT forward raw HTTP to Lambda. It packages the
-//    request into a JSON object called an APIGatewayProxyEvent:
-//      { httpMethod: 'POST', path: '/tasks', headers: {...}, body: '{"title":"..."}', ... }
-//    Note "body" is a STRING here, not a parsed object.
-// 3. AWS invokes this file's exported handler as handler(event, context).
-// 4. serverless-http takes that event, builds a fake (but accurate)
-//    Express `req`/`res` pair from it, and runs it through `app` exactly
-//    like a normal Express server would — so app.ts never has to know
-//    it's running inside Lambda at all.
-// 5. Whatever app.ts writes via res.status(...).json(...) is captured by
-//    serverless-http and converted back into the shape API Gateway expects
-//    to return to the client: { statusCode, headers, body }.
-// 6. API Gateway takes that object and sends it back as a real HTTP response.
-export const handler = serverlessHttp(app);
+interface Task {
+  id: string;
+  title: string;
+  completed: boolean;
+}
+
+// In-memory store. Resets on every cold start — a real database
+// replaces this once we move past this first lesson.
+const tasks: Task[] = [];
+
+function jsonResponse(statusCode: number, body: unknown): APIGatewayProxyResult {
+  return {
+    statusCode,
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  };
+}
+
+// No Express, no serverless-http — this handler receives the raw
+// APIGatewayProxyEvent and must return the raw {statusCode, headers, body}
+// shape itself. Doing it by hand once makes clear exactly what
+// serverless-http was doing for us before:
+export const handler = async (
+  event: APIGatewayProxyEvent
+): Promise<APIGatewayProxyResult> => {
+  let parsedBody: { title?: unknown };
+  try {
+    parsedBody = event.body ? JSON.parse(event.body) : {};
+  } catch {
+    return jsonResponse(400, { error: 'body must be valid JSON' });
+  }
+
+  const { title } = parsedBody;
+  if (typeof title !== 'string' || title.trim().length === 0) {
+    return jsonResponse(400, { error: 'title is required and must be a non-empty string' });
+  }
+
+  const task: Task = { id: randomUUID(), title, completed: false };
+  tasks.push(task);
+
+  return jsonResponse(201, task);
+};
