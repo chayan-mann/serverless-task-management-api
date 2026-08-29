@@ -1,0 +1,22 @@
+{
+  "name": "serverless-task-management-api",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "serverless offline",
+    "build": "tsc"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "serverless-http": "^3.2.0"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.145",
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.14.10",
+    "serverless": "^3.39.0",
+    "serverless-offline": "^13.6.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.5.3"
+  }
+}
