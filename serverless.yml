@@ -1,0 +1,17 @@
+service: task-management-api
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+
+plugins:
+  - serverless-plugin-typescript
+  - serverless-offline
+
+functions:
+  createTask:
+    handler: src/lambda.handler
+    events:
+      - http:
+          path: tasks
+          method: post
