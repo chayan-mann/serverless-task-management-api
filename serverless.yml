@@ -49,6 +49,13 @@ functions:
           path: tasks
           method: get
 
+  getTaskById:
+    handler: src/handlers/getTaskById.handler
+    events:
+      - http:
+          path: tasks/{id}
+          method: get
+
 resources:
   Resources:
     TasksTable:
