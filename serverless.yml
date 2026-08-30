@@ -56,6 +56,20 @@ functions:
           path: tasks/{id}
           method: get
 
+  updateTask:
+    handler: src/handlers/updateTask.handler
+    events:
+      - http:
+          path: tasks/{id}
+          method: put
+
+  deleteTask:
+    handler: src/handlers/deleteTask.handler
+    events:
+      - http:
+          path: tasks/{id}
+          method: delete
+
 resources:
   Resources:
     TasksTable:
