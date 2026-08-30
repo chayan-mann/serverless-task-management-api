@@ -1,15 +1,6 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { randomUUID } from 'crypto';
-
-interface Task {
-  id: string;
-  title: string;
-  completed: boolean;
-}
-
-// In-memory store. Resets on every cold start — a real database
-// replaces this once we move past this first lesson.
-const tasks: Task[] = [];
+import { Task, tasks } from '../store';
 
 function jsonResponse(statusCode: number, body: unknown): APIGatewayProxyResult {
   return {

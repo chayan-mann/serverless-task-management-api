@@ -10,8 +10,15 @@ plugins:
 
 functions:
   createTask:
-    handler: src/lambda.handler
+    handler: src/handlers/createTask.handler
     events:
       - http:
           path: tasks
           method: post
+
+  getTasks:
+    handler: src/handlers/getTasks.handler
+    events:
+      - http:
+          path: tasks
+          method: get
