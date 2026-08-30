@@ -1,6 +1,7 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { randomUUID } from 'crypto';
-import { Task, tasks } from '../store';
+import { PutCommand } from '@aws-sdk/lib-dynamodb';
+import { ddb, Task, TASKS_TABLE } from '../db';
 
 function jsonResponse(statusCode: number, body: unknown): APIGatewayProxyResult {
   return {
@@ -30,7 +31,7 @@ export const handler = async (
   }
 
   const task: Task = { id: randomUUID(), title, completed: false };
-  tasks.push(task);
+  await ddb.send(new PutCommand({ TableName: TASKS_TABLE, Item: task }));
 
   return jsonResponse(201, task);
 };
