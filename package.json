@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "serverless offline",
+    "dev": "serverless offline start",
     "build": "tsc"
   },
   "devDependencies": {
@@ -11,9 +11,14 @@
     "@types/node": "^20.19.43",
     "crypto": "^1.0.1",
     "serverless": "^3.39.0",
+    "serverless-dynamodb": "^0.2.58",
     "serverless-offline": "^13.6.0",
     "serverless-plugin-typescript": "^2.1.5",
     "ts-node": "^10.9.2",
     "typescript": "^5.5.3"
+  },
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.1121.0",
+    "@aws-sdk/lib-dynamodb": "^3.1121.0"
   }
 }

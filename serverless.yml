@@ -3,10 +3,36 @@ service: task-management-api
 provider:
   name: aws
   runtime: nodejs20.x
+  environment:
+    TASKS_TABLE: ${self:service}-${sls:stage}-tasks
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - dynamodb:PutItem
+            - dynamodb:GetItem
+            - dynamodb:Scan
+            - dynamodb:Query
+            - dynamodb:UpdateItem
+            - dynamodb:DeleteItem
+          Resource:
+            - !GetAtt TasksTable.Arn
 
 plugins:
   - serverless-plugin-typescript
+  - serverless-dynamodb
   - serverless-offline
+
+custom:
+  serverless-dynamodb:
+    stages:
+      - dev
+    start:
+      port: 8000
+      inMemory: false
+      dbPath: ${env:PWD}/.dynamodb-data
+      migrate: true
 
 functions:
   createTask:
@@ -22,3 +48,20 @@ functions:
       - http:
           path: tasks
           method: get
+
+resources:
+  Resources:
+    TasksTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:provider.environment.TASKS_TABLE}
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        BillingMode: PROVISIONED
+        ProvisionedThroughput:
+          ReadCapacityUnits: 5
+          WriteCapacityUnits: 5
